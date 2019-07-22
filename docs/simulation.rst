@@ -137,13 +137,202 @@ probability of detection.  Here's an example::
 data file to indicate whether or not a given epoch was high enough
 SNR to be "detected" in the simulation.
 
+The SEARCHEFF_PIPELINE_LOGIC_FILE
+---------------------------------
+
+This one is pretty simple.  The pipeline logic
+file tells the simulation what combination of individual
+detections in various filters and epochs constitutes a
+"detection" for the purposes of the survey.  For example,
+detections in two different filters or two separate
+detections.
+
+Here are a couple examples.  For a survey that requires two
+detections in any one of `griz`::
+
+  PS1MD: 2 g+r+i+z # require 1 epoch, any band
+
+Here's SDSS::
+  
+  SDSS: 3 gr+ri+gi  # require 3 epochs, each with detection in two bands.
+
 The Sim-Input File
 ------------------
 
-Finally, the input file!
+Finally, the input file!  Starting with the basics::
 
+  GENVERSION: PS1MD         # simname
+  GENSOURCE:  RANDOM   
+  GENMODEL:   SALT2.B14_LAMOPEN
+  GENPREEFIX: YSE_IA
+  RANSEED: 128473       # random number seed
+  
+  SIMLIB_FILE: ps1.simlib # simlib file
+
+  CIDOFF: 500
+  KCOR_FILE:  PS1/PS1s_RS14/kcor_PS1_none.fits
+
+:code:`GENVERSION` is the name of the simulation, :code:`GENSOURCE`
+can be set to `RANDOM` or `GRID`.  `GRID` simulations are a whole
+thing - let's stick to :code:`RANDOM` (Monte Carlo) simulations.
+:code:`GENMODEL` refers to one of the "model" directories in
+:code:`$SNDATA_ROOT/models`.
+
+SNANA has kind of a peculiar
+way of identifying models.  The first word (before the period)
+specifies the model type while the portion after the period
+specifies the version.  In this case, :code:`SALT2.B14_LAMOPEN`
+is SALT2.4 from Betoule et al. (2014), but extrapolated to
+slightly redder wavelengths than the original model.
+The model directory is :code:`$SNDATA_ROOT/models/SALT2/SALT2.JLA-B14_LAMOPEN`
+and some additional information is in the `SALT2.INFO` file in that
+directory.  Some models also have README files, which are helpful :).
+
+Onwards!::
+
+  APPLY_SEARCHEFF_OPT: 1
+
+  EXPOSURE_TIME_FILTER: g 1.0
+  EXPOSURE_TIME_FILTER: r 1.0
+  EXPOSURE_TIME_FILTER: i 1.0
+  EXPOSURE_TIME_FILTER: z 1.0
+
+  GENFILTERS: griz
+
+  GENSIGMA_SEARCH_PEAKMJD:  1.0 # sigma-smearing for  SEARCH_PEAKMJD (days)
+
+  GENRANGE_PEAKMJD:  58240  59617
+  SOLID_ANGLE: 0.192
+
+:code:`APPLY_SEARCHEFF_OPT` set to `1` keeps all
+"detected" SNe, but does not require that a SN has
+spectroscopic confirmation (:code:`APPLY_SEARCHEFF_OPT = 3`)
+or a host galaxy redshift (:code:`APPLY_SEARCHEFF_OPT = 5`)
+- those can be specified in more complicated simulations.
+:code:`APPLY_SEARCHEFF_OPT = 0` can be used to keep
+all SNe, detected or not.
+
+:code:`EXPOSURE_TIME_FILTER` here is set to 1.0, which
+just uses the nominal zeropoints, etc specified in the
+SIMLIB file.  It can be scaled up or down to easily adjust
+simulations.
+
+:code:`GENSIGMA_SEARCH_PEAKMJD` just adds uncertainty
+to the time of maximum light reported in the generated
+file headers.
+
+Next, referencing the search efficiency files::
+  
+  SEARCHEFF_PIPELINE_FILE:  SEARCHEFF_PIPELINE_YSE.DAT
+  SEARCHEFF_PIPELINE_LOGIC_FILE:  SEARCHEFF_PIPELINE_LOGIC_YSE.DAT
+
+Then, the redshift range to simulate. the redshift
+uncertainty to simulate, and the range of time around
+maximum light that is simulated for each light curve::
+  
+  GENRANGE_REDSHIFT:  0.001    0.5
+  GENSIGMA_REDSHIFT:  0.000001
+  GENRANGE_TREST:   -20.0    80.0     # rest epoch relative to peak (days)
+
+Next, SN rates.  There are a lot of options here, but
+for low-`z` simulations a simple power law will suffice::
+
+    DNDZ: POWERLAW  2.6E-5  2.2 # rate=2.6E-5*(1+z)^1.5 /yr/Mpc^3
+
+Here's an alternate example with two power laws from the manual::
+
+  # R0 Beta Zmin Zmax
+  DNDZ: POWERLAW2 2.2E-5 2.15 0.0 1.0 # rate = R0(1+z)^Beta
+  DNDZ: POWERLAW2 9.76E-5 0.0 1.0 2.0 # constant rate for z>1
+
+And some extra things::
+  
+  OPT_MWEBV: 1 # simulate galactic extinction from values in SIMLIB file
+
+  # smear flags: 0=off, 1=on
+  SMEARFLAG_FLUX:    1  # photo-stat smearing of signal, sky, etc ...
+  SMEARFLAG_ZEROPT:  1  # smear zero-point with zptsig
+
+Apply some sample cuts::
+  
+  APPLY_CUTWIN_OPT:     1
+  CUTWIN_NEPOCH:   5 -5.              # require 5 epochs (no S/N requirement)
+  CUTWIN_TRESTMIN: -20  10
+  CUTWIN_TRESTMAX:   9  40
+  CUTWIN_MWEBV:      0 .20
+  CUTWIN_SNRMAX:   5.0 grizXY 2 -20. 80.  # require 1 of griz with S/N > 5
+
+:code:`FORMAT_MASK: 2` specifies FITS format, while :code:`FORMAT_MASK: 32`
+is ASCII::
+  
+  FORMAT_MASK:  2 # terse format
+
+Parameters of the SALT model::
+  
+  # SALT shape and color parameters
+  GENMEAN_SALT2x1:     0.703
+  GENRANGE_SALT2x1:   -5.0  +4.0     # x1 (stretch) range
+  GENSIGMA_SALT2x1:    2.15  0.472      # bifurcated sigmas
+
+  GENMEAN_SALT2c:     -0.04
+  GENRANGE_SALT2c:   -0.4   0.4     # color range
+  GENSIGMA_SALT2c:    0.033   0.125     # bifurcated sigmas
+
+Nuisance parameters from the Tripp formula.  Alpha
+is the correlation of shape parameter `x1` with distance, while Beta
+is the correlation of color parameter `c` with distance.::
+  
+  # SALT2 alpha and beta
+  GENMEAN_SALT2ALPHA:   0.14
+  GENMEAN_SALT2BETA:   3.1
+
+Cosmological parameters::
+
+  # cosmological params for lightcurve generation and redshift distribution
+  OMEGA_MATTER:  0.3
+  OMEGA_LAMBDA:  0.7
+  W0_LAMBDA:    -1.00
+  H0:            70.0   
+
+And last but not least, variables to "dump" to an output file
+for every SN (not just those detected).  The first number is
+the number of variables::
+  
+  SIMGEN_DUMP:  10  CID  Z  PEAKMJD S2c S2x1 SNRMAX MAGT0_r MAGT0_g MJD_TRIGGER NON1A_INDEX
+
+The full example file is available `here`.
+
+Core-collapse and other non-Ia Simulations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For non-Ia simulations, only a couple things
+need to be changed in the input file::
+
+  GENMODEL:   NON1A
+  DNDZ: POWERLAW2 5E-5   4.5   0.0   0.8    # rate = R0(1+z)^Beta for z<0.8
+  DNDZ: POWERLAW2 5.44E-4  0.0   0.8   9.1  # rate = constant for z>0.8
+  DNDZ_PEC1A: POWERLAW  2.6E-5  2.2
+
+  INPUT_FILE_INCLUDE: $SNDATA_ROOT/snsed/NON1A/SIMGEN_INCLUDE_NON1A_J17-beforeAdjust.INPUT
+
+These lines change the generated model, the SN rates (including a new term for peculiar
+SNe Ia), and add an input file that defines the contribution of different CC SN
+templates.
+  
 Running the Simulation
 ----------------------
 
+Now that the files are assembled, running
+the simulations is easy::
+
+  snlc_sim.exe sim_PS1.input
+
+The default output is placed in :code:`$SNDATA_ROOT/SIM`.
+For your first simulation, you may need to first execute
+the following command::
+
+  mkdir $SNDATA_ROOT/SIM
+
 Examining the Output
 --------------------
+
