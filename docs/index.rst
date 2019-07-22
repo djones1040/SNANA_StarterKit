@@ -8,7 +8,6 @@ Welcome to the SNANA Starter Kit!
 
 .. toctree::
    :maxdepth: 4
-   :titlesonly:
 
    install
    kcor
