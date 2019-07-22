@@ -46,7 +46,7 @@ CUTWIN_NEPOCH:   5 -5.              # require 5 epochs (no S/N requirement)
 CUTWIN_TRESTMIN: -20  10
 CUTWIN_TRESTMAX:   9  40
 CUTWIN_MWEBV:      0 .20
-CUTWIN_SNRMAX:   5.0 grizXY 2 -20. 80.  # require 1 of griz with S/N > 5
+CUTWIN_SNRMAX:   5.0 griz 2 -20. 80.  # require 1 of griz with S/N > 5
 
 FORMAT_MASK:  2 # terse format
 

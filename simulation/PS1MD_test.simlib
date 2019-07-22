@@ -4,7 +4,7 @@ SURVEY: PS1MD    FILTERS: griz
 BEGIN LIBGEN  2016-3-28
 # --------------------------------------------
 LIBID: 1
-RA: 0    DECL: 0 NOBS: 60 MWEBV: 0.024   PIXSIZE: 0.25
+RA: 0    DECL: 0 NOBS: 62 MWEBV: 0.024   PIXSIZE: 0.25
 FIELD: 1
 #                           CCD  CCD         PSF1 PSF2 PSF2/1
 #     MJD      IDEXPT  FLT GAIN NOISE SKYSIG (pixels)  RATIO  ZPTAVG ZPTERR  MAG
