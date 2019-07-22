@@ -1,0 +1,10 @@
+MAGSYSTEM:  AB
+FILTSYSTEM: COUNT
+FILTPATH: $SNDATA_ROOT/filters/PS1/Pantheon/PS1
+FILTER: PS1-g   g_filt_tonry.txt   0.0
+FILTER: PS1-r   r_filt_tonry.txt   0.0
+FILTER: PS1-i   i_filt_tonry.txt   0.0
+FILTER: PS1-z   z_filt_tonry.txt   0.0
+FILTER: PS1-y   y_filt_tonry.txt   0.0
+
+OUTFILE:  kcor_PS1.fits
