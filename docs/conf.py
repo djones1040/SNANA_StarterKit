@@ -21,7 +21,7 @@ import sphinx_gallery
 project = 'SNANA Starter Kit'
 copyright = '2019, D. O. Jones'
 author = 'D. O. Jones'
-
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
