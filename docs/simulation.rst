@@ -163,7 +163,7 @@ Finally, the input file!  Starting with the basics::
 
   GENVERSION: PS1MD         # simname
   GENSOURCE:  RANDOM   
-  GENMODEL:   SALT2.B14
+  GENMODEL:   SALT2.JLA-B14
   GENPREEFIX: YSE_IA
   RANSEED: 128473       # random number seed
   
@@ -270,7 +270,7 @@ Apply some sample cuts::
   CUTWIN_TRESTMIN: -20  10
   CUTWIN_TRESTMAX:   9  40
   CUTWIN_MWEBV:      0 .20
-  CUTWIN_SNRMAX:   5.0 grizXY 2 -20. 80.  # require 1 of griz with S/N > 5
+  CUTWIN_SNRMAX:   5.0 griz 2 -20. 80.  # require 1 of griz with S/N > 5
 
 :code:`FORMAT_MASK: 2` specifies FITS format, while :code:`FORMAT_MASK: 32`
 is ASCII::
