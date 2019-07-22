@@ -163,7 +163,7 @@ Finally, the input file!  Starting with the basics::
 
   GENVERSION: PS1MD         # simname
   GENSOURCE:  RANDOM   
-  GENMODEL:   SALT2.B14
+  GENMODEL:   SALT2.JLA-B14
   GENPREEFIX: YSE_IA
   RANSEED: 128473       # random number seed
   

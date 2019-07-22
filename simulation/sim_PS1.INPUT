@@ -1,0 +1,72 @@
+GENVERSION: PS1MD         # simname
+GENSOURCE:  RANDOM
+GENMODEL:   SALT2.JLA-B14
+GENPREEFIX: YSE_IA
+RANSEED: 128473       # random number seed
+
+NGENTOT_LC: 5000
+#NGEN_SEASON: 1
+
+SIMLIB_FILE: PS1MD_test.simlib # simlib file
+
+CIDOFF: 500
+KCOR_FILE:  ../kcor/kcor_PS1.fits
+
+APPLY_SEARCHEFF_OPT: 1
+
+EXPOSURE_TIME_FILTER: g 1.0
+EXPOSURE_TIME_FILTER: r 1.0
+EXPOSURE_TIME_FILTER: i 1.0
+EXPOSURE_TIME_FILTER: z 1.0
+
+GENFILTERS: griz
+
+GENSIGMA_SEARCH_PEAKMJD:  1.0 # sigma-smearing for  SEARCH_PEAKMJD (days)
+
+GENRANGE_PEAKMJD:  55000 56000
+SOLID_ANGLE: 0.192
+
+SEARCHEFF_PIPELINE_FILE:  SEARCHEFF_PIPELINE_PS1.DAT
+SEARCHEFF_PIPELINE_LOGIC_FILE:  SEARCHEFF_PIPELINE_LOGIC_PS1.DAT
+
+GENRANGE_REDSHIFT:  0.01    0.5
+GENSIGMA_REDSHIFT:  0.000001
+GENRANGE_TREST:   -20.0    80.0     # rest epoch relative to peak (days)
+
+DNDZ: POWERLAW  2.6E-5  2.2 # rate=2.6E-5*(1+z)^1.5 /yr/Mpc^3
+
+OPT_MWEBV: 1 # simulate galactic extinction from values in SIMLIB file
+
+# smear flags: 0=off, 1=on
+SMEARFLAG_FLUX:    1  # photo-stat smearing of signal, sky, etc ...
+SMEARFLAG_ZEROPT:  1  # smear zero-point with zptsig
+
+APPLY_CUTWIN_OPT:     1
+CUTWIN_NEPOCH:   5 -5.              # require 5 epochs (no S/N requirement)
+CUTWIN_TRESTMIN: -20  10
+CUTWIN_TRESTMAX:   9  40
+CUTWIN_MWEBV:      0 .20
+CUTWIN_SNRMAX:   5.0 grizXY 2 -20. 80.  # require 1 of griz with S/N > 5
+
+FORMAT_MASK:  2 # terse format
+
+# SALT shape and color parameters
+GENMEAN_SALT2x1:     0.703
+GENRANGE_SALT2x1:   -5.0  +4.0     # x1 (stretch) range
+GENSIGMA_SALT2x1:    2.15  0.472      # bifurcated sigmas
+
+GENMEAN_SALT2c:     -0.04
+GENRANGE_SALT2c:   -0.4   0.4     # color range
+GENSIGMA_SALT2c:    0.033   0.125     # bifurcated sigmas
+
+# SALT2 alpha and beta
+GENMEAN_SALT2ALPHA:   0.14
+GENMEAN_SALT2BETA:   3.1
+
+# cosmological params for lightcurve generation and redshift distribution
+OMEGA_MATTER:  0.3
+OMEGA_LAMBDA:  0.7
+W0_LAMBDA:    -1.00
+H0:            70.0
+
+SIMGEN_DUMP:  10  CID  Z  PEAKMJD S2c S2x1 SNRMAX MAGT0_r MAGT0_g MJD_TRIGGER NON1A_INDEX
