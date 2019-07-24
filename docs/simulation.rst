@@ -272,7 +272,7 @@ Apply some sample cuts::
   CUTWIN_MWEBV:      0 .20
   CUTWIN_SNRMAX:   5.0 griz 2 -20. 80.  # require 1 of griz with S/N > 5
 
-:code:`FORMAT_MASK: 2` specifies FITS format, while :code:`FORMAT_MASK: 32`
+:code:`FORMAT_MASK: 32` specifies FITS format, while :code:`FORMAT_MASK: 2`
 is ASCII::
   
   FORMAT_MASK:  2 # terse format
@@ -420,5 +420,22 @@ the LCs can be converted to a PANDAS dataframe thanks to some
 utilities from the PLAsTiCC team and Alexandre Boucaud
 (I modified them slightly).
 
-As a reminder, use :code:`FORMAT_MASK: 2` in your sim-input file
-to use FITS format and :code:`FORMAT_MASK: 32` for ASCII format.
+As a reminder, use :code:`FORMAT_MASK: 32` in your sim-input file
+to use FITS format and :code:`FORMAT_MASK: 2` for ASCII format.
+A quick example for plotting a FITS-format light curve is below::
+
+  from sim_serializer import serialize
+  import matplotlib.pyplot as plt
+  datadict = serialize.main('PS1MD')
+  for key in datadict[list(datadict.keys())[20]].keys():
+    if key == 'header': continue
+    plt.errorbar(datadict[501][key]['mjd'],
+                datadict[501][key]['fluxcal'],
+                yerr=datadict[501][key]['fluxcalerr'],
+                fmt='o',label=key)
+  plt.ylabel('flux')
+  plt.xlabel('mjd')
+
+Please report any issues with this
+guide using the `SNANA_StarterKit GitHub page
+<https://github.com/djones1040/SNANA_StarterKit/issues>`_.
