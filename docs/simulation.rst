@@ -308,9 +308,10 @@ And last but not least, variables to "dump" to an output file
 for every SN (not just those detected).  The first number is
 the number of variables::
   
-  SIMGEN_DUMP:  10  CID  Z  PEAKMJD S2c S2x1 SNRMAX MAGT0_r MAGT0_g MJD_TRIGGER NON1A_INDEX
+  SIMGEN_DUMPALL:  10  CID  Z  PEAKMJD S2c S2x1 SNRMAX MAGT0_r MAGT0_g MJD_TRIGGER NON1A_INDEX
 
-The full example file is available `here`.
+The `SIMGEN_DUMPALL` key will save the specified columns for both detected and undetected SNe, while
+`SIMGEN_DUMP` will save the information only for detected SNe.  The full example file is available `here`.
 
 Core-collapse and other non-Ia Simulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -357,7 +358,67 @@ variable in your sim-input file.  This is a good
 way to get some overview statistics for your sample.
 
 For example, plotting the redshift and peak mag
-distribution of your simulation.
+distribution of your simulation.  Starting with some imports::
 
+  import numpy as np
+  import os
+  import matplotlib.pyplot as plt
+  from txtobj import txtobj
+
+  # read in the DUMP file
+  dmp = txtobj(os.path.expandvars('$SNDATA_ROOT/SIM/PS1MD/PS1MD.DUMP'),fitresheader=True)
+  print(dmp.__dict__.keys())
+
+Plotting a redshift histogram for detected and undetected SNe::
+
+  bins = np.arange(0,0.55,0.05)
+  plt.hist(dmp.Z,label='all',bins=bins)
+  plt.hist(dmp.Z[dmp.MJD_TRIGGER != 1000000.000],bins=bins,label='detected')
+  plt.ylabel('N$_{SNe}$',fontsize=15)
+  plt.xlabel('redshift',fontsize=15)
+  plt.legend()
+
+.. image:: _static/zhist_simtest.png
+  
+Plotting a peak magnitude distribution::
+
+  bins = np.arange(17,25,0.25)
+  plt.hist(dmp.MAGT0_r,label='all',bins=bins)
+  plt.hist(dmp.MAGT0_r[dmp.MJD_TRIGGER != 1000000.000],bins=bins,label='detected')
+  plt.ylabel('N$_{SNe}$',fontsize=15)
+  plt.xlabel('redshift',fontsize=15)
+  plt.legend()
+
+.. image:: _static/pkmaghist_simtest.png
+  
 The Simulated Light Curves
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Let's take a look at some of the simulated ASCII files.
+These can be easily parsed with the `snana.py` script
+in the utils directory::
+
+  import numpy as np
+  import snana
+  import matplotlib.pyplot as plt
+  import os
+  import glob
+
+  lcfiles = glob.glob(os.path.expandvars('$SNDATA_ROOT/SIM/PS1MD/*DAT'))
+  sn = snana.SuperNova(lcfiles[10])
+  for f in sn.FILTERS:
+      plt.errorbar(sn.MJD[sn.FLT == f],sn.FLUXCAL[sn.FLT == f],
+                   yerr=sn.FLUXCALERR[sn.FLT == f],label=f,fmt='o')
+  plt.ylabel('Flux')
+  plt.xlabel('MJD')
+  plt.legend()
+
+.. image:: _static/lc_simtest.png
+
+In FITS format, things are a little bit more annoying.  Luckily,
+the LCs can be converted to a PANDAS dataframe thanks to some
+utilities from the PLAsTiCC team and Alexandre Boucaud
+(I modified them slightly).
+
+As a reminder, use :code:`FORMAT_MASK: 2` in your sim-input file
+to use FITS format and :code:`FORMAT_MASK: 32` for ASCII format.
