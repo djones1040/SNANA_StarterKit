@@ -12,7 +12,10 @@ Welcome to the SNANA Starter Kit!
    install
    kcor
    simulation
-
+   fitting
+   distances
+   cosmology
+   
 Indices and tables
 ==================
 
