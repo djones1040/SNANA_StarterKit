@@ -189,9 +189,11 @@ And then a few lines to read/plot stuff::
 Now add the parameters from the fit::
 
   iSN = fr.CID == sn.SNID
-  plt.title('SNID = %s, $x_0$ = %8.5e, $x_1$ = %.2f, c = %.3f'%(
+  plt.title('SNID = %s, $x_0$ = %8.2e, $x_1$ = %.2f, c = %.3f'%(
             sn.SNID,fr.x0[iSN],fr.x1[iSN],fr.c[iSN]))
 
+.. image:: _static/lcparams.png
+	    
 Now plot the SALT model (you'll need sncosmo for this example)::
 
   import sncosmo
@@ -218,6 +220,8 @@ Now plot the SALT model (you'll need sncosmo for this example)::
       salt2flux = model.bandflux(f, mjd, zp=27.5, zpsys='AB')
       plt.plot(mjd,salt2flux,color='C%i'%i)
 
+.. image:: _static/lc_salt2fit.png
+      
 An important caveat - sncosmo won't check whether your filters
 are too red or blue for the SALT2 model.  If your central filter
 wavelength in the SN rest frame is redder than 7000 Angstroms or
@@ -253,17 +257,27 @@ Making a Hubble diagram is pretty easy then::
 
   # import our baseline cosmological params for comparison
   from astropy.cosmology import Planck15 as cosmo
-  from .util import getmu
+  from util import getmu
 
   # gives the fitres object a "mu", "muerr" and "mures" attribute
   fr = getmu.getmu(fr)
+  fr = getmu.mkcuts(fr)
+  iErr = fr.muerr < 0.2 # no crazy errors!
 
   zrange = np.arange(0,1,0.01)
   plt.plot(zrange,cosmo.distmod(zrange).value,color='k')
-  plt.errorbar(fr.zCMB,fr.mu,yerr=fr.muerr,fmt='o')
-  plt.xlabel('$z_CMB$',fontsize=15)
+  plt.errorbar(fr.zCMB[iErr],fr.mu[iErr],yerr=fr.muerr[iErr],fmt='o')
+  plt.xlabel('$z_{CMB}$',fontsize=15)
   plt.ylabel('$\mu$',fontsize=15)
+  plt.xlim([0.05,0.6])
+  plt.ylim([36,44])
 
+.. image:: _static/quickhubble.png
+
+Note the SNe fall a little bit below the :math:`\Lambda`\CDM line.  That's ok, it's
+just an artifact of :math:`H_0` and the SN absolute magnitude being degenerate.  We
+marginalize over this global offset in cosmological analyses.
+	   
 Done!
 
 Running in Batch Mode

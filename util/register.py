@@ -13,7 +13,6 @@ def from_kcor(kcorfile):
 	bandlist = []
 	for k in bandpassdict.keys():
 		if k not in ignorelist:
-			print(k)
 			band = sncosmo.Bandpass(
 				bandpassdict['filtwave'],
 				bandpassdict[k]['filttrans'],
