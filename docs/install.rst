@@ -98,7 +98,15 @@ Or, at the command line::
 Installing SNANA
 ^^^^^^^^^^^^^^^^
 
-Installing SNANA should be as easy as::
+Installing SNANA on a Mac requires two small edits to :code:`$SNANA_DIR/src/sntools.h`.  However,
+be warned that this could cause some ringing noise in spectral simulations due to a finite number
+of randoms.  Unfortunately, I couldn't figure out another workaround here.  The following two
+lines should be un-commented (remove the :code:`//` at the beginning of the lines)::
+
+  //#define  ONE_RANDOM_STREAM  // enable this for Mac (D.Jones, July 2020)
+  //#define  MACOS              // another MAC OS option, D.Jones, Sep 2020
+
+After that, installing should be as easy as::
   
   cd $SNANA_DIR/src
   make
