@@ -106,6 +106,28 @@ lines should be un-commented (remove the :code:`//` at the beginning of the line
   //#define  ONE_RANDOM_STREAM  // enable this for Mac (D.Jones, July 2020)
   //#define  MACOS              // another MAC OS option, D.Jones, Sep 2020
 
+Recently, there's one more hack needed in the Makefile.  If your Mac has GCC version 10.x, SNANA will read the version incorrectly.  That means you'll have to search for these lines::
+  
+  ifeq ($(GCCVERSION10),0)
+    EXTRA_FLAGS_FORTRAN  = $(EXTRA_FLAGS)
+    EXTRA_FLAGS_C        = $(EXTRA_FLAGS)
+  else 
+    # for gcc v10, allow argument-mismatch errors (9.2020)
+    EXTRA_FLAGS_FORTRAN = $(EXTRA_FLAGS) -fallow-argument-mismatch -fcommon
+    EXTRA_FLAGS_C       = $(EXTRA_FLAGS) -fcommon
+  endif
+
+and add the extra fortran flags to the first :code:`EXTRA_FLAGS` line, like so::
+
+  ifeq ($(GCCVERSION10),0)
+    EXTRA_FLAGS_FORTRAN  = $(EXTRA_FLAGS) -fallow-argument-mismatch -fcommon
+    EXTRA_FLAGS_C        = $(EXTRA_FLAGS)
+  else 
+    # for gcc v10, allow argument-mismatch errors (9.2020)
+    EXTRA_FLAGS_FORTRAN = $(EXTRA_FLAGS) -fallow-argument-mismatch -fcommon
+    EXTRA_FLAGS_C       = $(EXTRA_FLAGS) -fcommon
+  endif
+  
 After that, installing should be as easy as::
   
   cd $SNANA_DIR/src
