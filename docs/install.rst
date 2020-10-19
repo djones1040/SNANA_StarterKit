@@ -121,7 +121,7 @@ and add the extra fortran flags to the first :code:`EXTRA_FLAGS` line, like so::
 
   ifeq ($(GCCVERSION10),0)
     EXTRA_FLAGS_FORTRAN  = $(EXTRA_FLAGS) -fallow-argument-mismatch -fcommon
-    EXTRA_FLAGS_C        = $(EXTRA_FLAGS)
+    EXTRA_FLAGS_C        = $(EXTRA_FLAGS) -fcommon
   else 
     # for gcc v10, allow argument-mismatch errors (9.2020)
     EXTRA_FLAGS_FORTRAN = $(EXTRA_FLAGS) -fallow-argument-mismatch -fcommon
